@@ -9,14 +9,20 @@
   <button (click)="logout()">Logout</button>
 
   <form (submit)="onSubmit()">
-    <input [(ngModel)]="url" name="url" placeholder="url">
+    <select [(ngModel)]="form.provider" name="provider">
+      <option value="youtube" selected>Youtube</option>
+    </select>
+    <input [(ngModel)]="form.url" name="url" placeholder="url">
     <button type="submit">GET</button>
   </form>
 
   <h3>Items</h3>
+  <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
   <ul>
     <li *ngFor="let item of items | async">
-      {{ item.title }}
+      {{ item.payload.doc.data().title }}
+      <a (click)="remove(item)">Remove</a>
+      <a (click)="select(item)">Select</a>
     </li>
   </ul>
 

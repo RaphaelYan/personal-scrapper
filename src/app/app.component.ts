@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface Item {
   userid: string;
   title: string;
+  status: string;
 }
 
 @Component({
@@ -17,28 +18,39 @@ interface Item {
 })
 export class AppComponent {
   private itemsCollection: AngularFirestoreCollection<Item>;
-  public items: Observable<Item[]>;
-  public url: string = '';
+  public items: Observable<DocumentChangeAction[]>;
+
+  public form: any = {
+    provider: 'youtube',
+    url: ''
+  };
   public user: any;
-  private init: boolean = false;
+  public statuses: any = [
+    {
+      label: 'A traiter',
+      value: 'scrapped'
+    }, {
+      label: 'Supprimés',
+      value: 'deleted'
+    }, {
+      label: 'Acceptés',
+      value: 'accepted'
+    }
+  ];
+  public currentStatus: string = 'scrapped';
 
   constructor(public afAuth: AngularFireAuth, private afs: AngularFirestore, private http: HttpClient) {
     this.afAuth.authState.subscribe((user) => {
       this.user = user;
       this.initFetch();
     });
-
   }
 
   public initFetch() {
-    if (this.init) {
-      return;
-    }
-    this.init = true;
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
-      return ref.where('userid', '==', this.user.uid);
+      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus);
     });
-    this.items = this.itemsCollection.valueChanges();
+    this.items = this.itemsCollection.snapshotChanges()
   }
 
   public login() {
@@ -51,7 +63,8 @@ export class AppComponent {
 
   public onSubmit() {
     const body = {
-      url: this.url,
+      url: this.form.url,
+      provider: this.form.provider,
       userid: this.user.uid
     };
     this.http.post('http://127.0.0.1:8081/scrape', body, {
@@ -61,5 +74,18 @@ export class AppComponent {
     .subscribe((data) => {
       console.log('data', data);
     });
+  }
+
+  public remove(item) {
+    item.payload.doc.ref.update({status: 'deleted'});
+  }
+
+  public select(item) {
+    item.payload.doc.ref.update({status: 'accepted'});
+  }
+
+  public filterByStatus(status) {
+    this.currentStatus = status.value;
+    this.initFetch();
   }
 }

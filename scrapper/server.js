@@ -24,15 +24,16 @@ function addItem(user, item) {
       id: item.id,
       title: item.title,
       userid: user.uid,
+      status: 'scrapped'
     });
   } else {
     console.log("on add pas: existe deja");
   }
 }
 
-function scrap(url, user) {
+function scrap(body, user) {
   return new Promise((resolve, reject) => {
-    request(url, function(error, response, html) {
+    request(body.url, function(error, response, html) {
       if (!error) {
         var $ = cheerio.load(html);
 
@@ -40,6 +41,7 @@ function scrap(url, user) {
             var data = $(this);
             var title = data.find('.yt-lockup-title').children().first().text();
             var id = data.find('.yt-lockup-video').attr('data-context-item-id');
+            id = body.provider + '-' + id;
             addItem(user, {title, userid : user.uid, id: id });
         });
         resolve();
@@ -72,7 +74,7 @@ app.post('/scrape', function(req, res) {
       console.log("after");
       console.log(user.items);
 
-      scrap(url, user).then(() => {
+      scrap(req.body, user).then(() => {
         res.send('blah');
       });
     }).catch(function(error) {
