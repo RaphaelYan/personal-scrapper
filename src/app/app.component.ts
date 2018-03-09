@@ -3,7 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface Item {
   userid: string;
@@ -54,7 +54,10 @@ export class AppComponent {
       url: this.url,
       userid: this.user.uid
     };
-    this.http.post('http://127.0.0.1:8081/scrape', body)
+    this.http.post('http://127.0.0.1:8081/scrape', body, {
+      headers: new HttpHeaders().set('Content-Type', 'application/json'),
+      responseType: 'text'
+     })
     .subscribe((data) => {
       console.log('data', data);
     });
