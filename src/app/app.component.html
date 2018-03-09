@@ -11,6 +11,7 @@
   <form (submit)="onSubmit()">
     <select [(ngModel)]="form.provider" name="provider">
       <option value="youtube" selected>Youtube</option>
+      <option value="mamytwink" selected>MamyTwink</option>
     </select>
     <input [(ngModel)]="form.url" name="url" placeholder="url">
     <button type="submit">GET</button>
@@ -20,7 +21,7 @@
   <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
   <ul>
     <li *ngFor="let item of items | async">
-      {{ item.payload.doc.data().title }}
+      <item [item]="item.payload.doc.data()"></item>
       <a (click)="remove(item)">Remove</a>
       <a (click)="select(item)">Select</a>
     </li>

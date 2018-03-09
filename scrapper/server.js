@@ -20,30 +20,70 @@ app.use(cors());
 
 function addItem(user, item) {
   if (!user.items.find(i => i.id === item.id)) {
+    // admin.firestore().collection('items').add(item); // WHY THE FUCK IS THIS NOT WORKING ? Error: Cannot use custom type "undefined" as a Firestore type.
+    // but this is ok: ????
     admin.firestore().collection('items').add({
       id: item.id,
       title: item.title,
       userid: user.uid,
-      status: 'scrapped'
+      status: 'scrapped',
+      image: item.image,
+      provider: item.provider,
+      url: item.url
     });
   } else {
     console.log("on add pas: existe deja");
   }
 }
 
+// c'est possible en js des classes pour faire des interface joli etc ? C'est trop moche ca en javascript serieux :()
+
+function youtubeScrap(html, user) {
+  var $ = cheerio.load(html);
+
+  $('.channels-content-item').filter(function() {
+    var data = $(this);
+    var title = data.find('.yt-lockup-title').children().first().text();
+    let url = data.find('.yt-lockup-title').children().first().attr('href');
+    var id = data.find('.yt-lockup-video').attr('data-context-item-id');
+    var image = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');;
+    id = 'youtube' + '-' + id;
+    let item = { // bouuuuh les interface c'est en typescript. Comment on fait des interface et de l'heritage en js ? :'(
+      title: title, id: id, image: image, userid: user.id, provider: 'youtube', status: 'scrapped', url: url
+    }
+    console.log("image", image);
+    addItem(user, item);
+  });
+}
+
+function mamytwinkScrap(html, user) {
+  var $ = cheerio.load(html);
+
+  $('.article_wrapper').filter(function() {
+    var data = $(this);
+    let title = data.find('.article-titre .h1 a').text().trim();
+    let date = data.find('meta').attr('content');
+    let desc = data.find('.article-entete').text().trim();
+    let image = data.find('.vignette img').attr('src');
+    let url = data.find('.vignette a').attr('href');
+    let id = 'mamytwink-' + url;
+    let item = { // bouuuuh
+      title: title, id: id, image: image, userid: user.id, provider: 'mamytwink', status: 'scrapped', url: url, date: date
+    }
+    addItem(user, item);
+  });
+}
+
 function scrap(body, user) {
   return new Promise((resolve, reject) => {
     request(body.url, function(error, response, html) {
       if (!error) {
-        var $ = cheerio.load(html);
-
-        $('.channels-content-item').filter(function() {
-            var data = $(this);
-            var title = data.find('.yt-lockup-title').children().first().text();
-            var id = data.find('.yt-lockup-video').attr('data-context-item-id');
-            id = body.provider + '-' + id;
-            addItem(user, {title, userid : user.uid, id: id });
-        });
+        switch(body.provider) {
+          case 'youtube':
+            youtubeScrap(html, user);
+          case 'mamytwink':
+            mamytwinkScrap(html, user);
+        }
         resolve();
       } else {
         reject(console.log(error));
@@ -86,13 +126,21 @@ app.post('/scrape', function(req, res) {
 
 app.get('/scrape', function(req, res) {
 
-  request("https://www.youtube.com/user/joueurdugrenier/videos", function(error, response, html) {
+  request("https://www.mamytwink.com/", function(error, response, html) {
     if (!error) {
       var $ = cheerio.load(html);
-      $('.yt-lockup-title').filter(function() {
-          var data = $(this);
-          var title = data.children().first().text();
-          console.log('pwet', title);
+      $('.article_wrapper').filter(function() {
+        var data = $(this);
+        let title = data.find('.article-titre .h1 a').text().trim();
+        let date = data.find('meta').attr('content');
+        let desc = data.find('.article-entete').text().trim();
+        let image = data.find('.vignette img').attr('src');
+        let url = data.find('.vignette a').attr('href');
+        let id = 'mamytwink-' + url;
+        console.log("-----");
+        console.log(title);
+        console.log(date);
+        console.log(image);
       });
       res.send(html);
     } else {

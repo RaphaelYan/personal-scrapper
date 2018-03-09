@@ -10,9 +10,12 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 
+import { ItemComponent } from './item';
+
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ItemComponent
   ],
   imports: [
     BrowserModule,
