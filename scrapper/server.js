@@ -6,6 +6,7 @@ var admin         = require('firebase-admin');
 
 var app           = express();
 const bodyParser  = require('body-parser');
+var cors = require('cors');
 
 var serviceAccount = require('./serviceAccountKey.json');
 
@@ -15,6 +16,7 @@ admin.initializeApp({
 });
 
 app.use(bodyParser.json());
+app.use(cors());
 
 function addItem(user, item) {
   if (!user.items.find(i => i.id === item.id)) {
