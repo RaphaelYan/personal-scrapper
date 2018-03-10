@@ -5,6 +5,7 @@
 
 export const environment = {
   production: false,
+  url: 'http://127.0.0.1:8081/scrape',
   firebase: {
     apiKey: 'AIzaSyAg8XBoLICqKK1uPqD6BXgtBb3jswhq7Y8',
     authDomain: 'personal-scrapper.firebaseapp.com',

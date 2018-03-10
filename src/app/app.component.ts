@@ -104,7 +104,7 @@ export class AppComponent {
   }
 
   public onSubmitScrap() {
-    this.http.post('http://127.0.0.1:8081/scrape', this.selectedUrl, {
+    this.http.post('/scrape', this.selectedUrl, {
       headers: new HttpHeaders().set('Content-Type', 'application/json'),
       responseType: 'text'
      })
