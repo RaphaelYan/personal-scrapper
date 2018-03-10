@@ -69,7 +69,9 @@ export class AppComponent {
 
   public initFetch() {
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
-      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus).orderBy('timestamp', this.currentStatus === 'scrapped' ? 'desc' : 'asc');
+      return ref.where('userid', '==', this.user.uid)
+        .where('status', '==', this.currentStatus)
+        .orderBy('timestamp', this.currentStatus === 'scrapped' ? 'desc' : 'asc');
     });
     this.items = this.itemsCollection.snapshotChanges();
   }
@@ -126,6 +128,6 @@ export class AppComponent {
   }
 
   public compareSelectedUrl(itemA, itemB) {
-    return itemA && itemB && itemA.url == itemB.url;
+    return itemA && itemB && itemA.url === itemB.url;
   }
 }
