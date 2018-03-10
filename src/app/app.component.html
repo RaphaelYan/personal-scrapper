@@ -8,7 +8,7 @@
   <div class="jumbotron">
     <div class="container">
       <h1>Hello {{ user.displayName }}!</h1>
-      <button (click)="logout()">Logout</button>
+      <button (click)="logout()" type="button" class="btn btn-primary">Logout</button>
 
       <form (submit)="onSubmitScrap()">
         <select [(ngModel)]="form.provider" name="provider">
@@ -19,20 +19,23 @@
           <option value="" disabled>Selectionnez un site</option>
           <option *ngFor="let site of sites | async" [value]="site.payload.doc.data().url">{{ site.payload.doc.data().label }}</option>
         </select>
-        <button type="submit" [disabled]="!form.url">SCRAPPER</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!form.url">SCRAPPER</button>
       </form>
       <br>
       <form (submit)="onSubmitSite()">
         Ajouter un site :
         <input [(ngModel)]="formSite.label" name="label" placeholder="label">
         <input [(ngModel)]="formSite.url" name="url" placeholder="url">
-        <button type="submit">ENREGISTRER</button>
+        <button type="submit" class="btn btn-primary">ENREGISTRER</button>
       </form>
     </div>
   </div>
 
   <div class="container">
-    <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
+    <div class="btn-group">
+      <button type="button" class="btn {{ status.btn }}" *ngFor="let status of statuses" (click)="filterByStatus(status)">{{ status.label }}</button>
+    </div>
+
     <div class="card-columns">
       <item-scrapped *ngFor="let item of items | async" [item]="item.payload.doc.data()"></item-scrapped>
     </div>

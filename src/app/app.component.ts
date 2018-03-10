@@ -38,13 +38,16 @@ export class AppComponent {
   public user: any;
   public statuses: any = [
     {
+      btn: 'btn-danger',
+      label: 'Enlevés',
+      value: 'deleted'
+    }, {
+      btn: 'btn-primary',
       label: 'A traiter',
       value: 'scrapped'
     }, {
-      label: 'Supprimés',
-      value: 'deleted'
-    }, {
-      label: 'Acceptés',
+      btn: 'btn-success',
+      label: 'Gardés',
       value: 'accepted'
     }
   ];

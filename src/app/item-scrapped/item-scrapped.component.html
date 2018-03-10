@@ -6,7 +6,7 @@
   </div>
   <div class="card-footer">
     <small class="text-muted" *ngIf="item.date">{{ item.date }}</small>
-    <a (click)="remove(item)">Remove</a>
-    <a (click)="select(item)">Select</a>
+    <button (click)="remove(item)" type="button" class="btn btn-danger">Enlever</button>
+    <button (click)="select(item)" type="button" class="btn btn-success">Garder</button>
   </div>
 </div>
