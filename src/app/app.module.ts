@@ -10,6 +10,8 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
+
 import { ItemScrappedComponent } from './item-scrapped/item-scrapped.component';
 
 @NgModule({
@@ -24,6 +26,7 @@ import { ItemScrappedComponent } from './item-scrapped/item-scrapped.component';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFirestoreModule.enablePersistence(),
+    AngularFontAwesomeModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

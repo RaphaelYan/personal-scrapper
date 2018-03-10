@@ -109,14 +109,6 @@ export class AppComponent {
     this.formSite.label = '';
   }
 
-  public remove(item) {
-    item.payload.doc.ref.update({status: 'deleted'});
-  }
-
-  public select(item) {
-    item.payload.doc.ref.update({status: 'accepted'});
-  }
-
   public filterByStatus(status) {
     this.currentStatus = status.value;
     this.initFetch();

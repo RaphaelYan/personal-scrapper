@@ -1,12 +1,18 @@
 <div class="card">
-  <img class="card-img-top" [src]="item.image">
+  <img class="card-img-top" [src]="itemData.image">
   <div class="card-body">
-    <h5 class="card-title">{{ item.title }} </h5>
-    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    <h5 class="card-title">{{ itemData.title }} </h5>
+    <a [href]="itemData.url" target="_blank">
+      <i class="fa fa-link"></i>
+    </a>
+    <p class="card-text">{{itemData.desc }}</p>
   </div>
-  <div class="card-footer">
-    <!-- <small class="text-muted" *ngIf="item.date">{{ item.date }}</small> -->
-    <button (click)="remove(item)" type="button" class="btn btn-danger">Enlever</button>
-    <button (click)="select(item)" type="button" class="btn btn-success">Garder</button>
+  <div class="card-footer" *ngIf="itemData.date">
+    <small class="text-muted" *ngIf="itemData.date">{{ itemData.date }}</small>
   </div>
+  <div class="btn-group">
+      <button (click)="remove()" type="button" class="btn btn-danger" *ngIf="itemData.status != 'deleted'">Enlever</button>
+      <button (click)="scrapped()" type="button" class="btn btn-primary" *ngIf="itemData.status != 'scrapped'">Restaurer</button>
+      <button (click)="select()" type="button" class="btn btn-success" *ngIf="itemData.status != 'accepted'">Garder</button>
+    </div>
 </div>
