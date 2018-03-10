@@ -1,12 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'item-scrapped',
+  selector: '[item-scrapped]',
   templateUrl: './item-scrapped.component.html',
   styleUrls: ['./item-scrapped.component.scss']
 })
 export class ItemScrappedComponent implements OnInit {
-  @Input() public item;
+  @Input('item-scrapped') public item;
 
   public itemData;
 

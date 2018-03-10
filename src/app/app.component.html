@@ -61,8 +61,8 @@
         <button type="button" class="btn {{ status.btn }}" *ngFor="let status of statuses" (click)="filterByStatus(status)">{{ status.label }}</button>
       </div>
 
-      <div class="card-columns">
-        <item-scrapped *ngFor="let item of items | async" [item]="item"></item-scrapped>
+      <div class="card-deck">
+        <div class="card" *ngFor="let item of items | async" [item-scrapped]="item"></div>
       </div>
     </div>
   </main>
