@@ -10,26 +10,42 @@
       <h1>Hello {{ user.displayName }}!</h1>
       <button (click)="logout()" type="button" class="btn btn-primary">Logout</button>
 
-      <button type="button" class="btn btn-outline-primary" (click)="toggleForm()">{{ showForm ? 'Lancer un scrap' : 'Ajouter une url' }}</button>
+      <div class="mb-2 col-md-12 btn-toggle">
+        <button type="button" class="btn btn-outline-primary btn-block" (click)="toggleForm()">{{ showForm ? 'Lancer un scrap' : 'Ajouter une url' }}</button>
+      </div>
 
-      <form (submit)="onSubmitScrap()" *ngIf="!showForm">
-        <select class="form-control" [(ngModel)]="selectedUrl" name="url" [compareWith]="compareSelectedUrl">
-          <option value="" disabled>Selectionnez une url</option>
-          <option *ngFor="let site of sites | async" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
-        </select>
-        <button type="submit" class="btn btn-primary" [disabled]="!selectedUrl?.url">SCRAPPER</button>
+      <form class="row" (submit)="onSubmitScrap()" *ngIf="!showForm">
+        <div class="mb-2 col-md-4">
+          {{ selectedUrl?.provider ? ('Provider : ' + selectedUrl.provider) : '' }}
+        </div>
+        <div class="form-group mb-2 col-md-4">
+          <select class="form-control" [(ngModel)]="selectedUrl" name="url" [compareWith]="compareSelectedUrl">
+            <option value="" disabled>Selectionnez une url</option>
+            <option *ngFor="let site of sites | async" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
+          </select>
+        </div>
+        <div class="mb-2 col-md-4">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="!selectedUrl?.url">SCRAPPER</button>
+        </div>
       </form>
-      <br>
 
-      <form (submit)="onSubmitSite()" *ngIf="showForm">
-        <select class="form-control" [(ngModel)]="formSite.provider" name="provider">
-          <option value="">Sélectionnez un provider</option>
-          <option value="youtube">Youtube</option>
-          <option value="mamytwink">MamyTwink</option>
-        </select>
-        <input class="form-control" [(ngModel)]="formSite.label" name="label" placeholder="label">
-        <input class="form-control" [(ngModel)]="formSite.url" name="url" placeholder="url">
-        <button type="submit" class="btn btn-primary" [disabled]="!formSite.provider || !formSite.label || !formSite.url">ENREGISTRER</button>
+      <form class="row" (submit)="onSubmitSite()" *ngIf="showForm">
+        <div class="form-group mb-2 col-md-3">
+          <select class="form-control" [(ngModel)]="formSite.provider" name="provider">
+            <option value="">Sélectionnez un provider</option>
+            <option value="youtube">Youtube</option>
+            <option value="mamytwink">MamyTwink</option>
+          </select>
+        </div>
+        <div class="form-group mb-2 col-md-3">
+          <input class="form-control" [(ngModel)]="formSite.label" name="label" placeholder="label">
+        </div>
+        <div class="form-group mb-2 col-md-3">
+          <input class="form-control" [(ngModel)]="formSite.url" name="url" placeholder="url">
+        </div>
+        <div class="mb-2 col-md-3">
+          <button type="submit" class="btn btn-primary btn-block" [disabled]="!formSite.provider || !formSite.label || !formSite.url">ENREGISTRER</button>
+        </div>
       </form>
     </div>
   </div>
