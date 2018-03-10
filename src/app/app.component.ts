@@ -66,7 +66,7 @@ export class AppComponent {
 
   public initFetch() {
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
-      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus);
+      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus).orderBy('timestamp');
     });
     this.items = this.itemsCollection.snapshotChanges();
   }

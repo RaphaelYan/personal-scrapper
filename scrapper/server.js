@@ -30,8 +30,10 @@ class ScrapperModel {
   }
 };
 
-const scrapperAddItem = (user, item) => {
+const scrapperAddItem = (user, item, index) => {
   if (!user.items.find(i => i.id === item.id)) {
+    const now = Date.now();
+    item.timestamp= now + index;
     item.userid = user.uid;
     console.log('===== on add =====');
     console.log(item);
@@ -44,7 +46,7 @@ const scrapperAddItem = (user, item) => {
 const scrapperYoutubeScrap = (html, user) => {
   const $ = cheerio.load(html);
 
-  $('.channels-content-item').filter(function() {
+  $('.channels-content-item').filter(function(index) {
     const data = $(this);
 
     const infos = {};
@@ -55,14 +57,14 @@ const scrapperYoutubeScrap = (html, user) => {
 
     const item = new ScrapperModel('youtube', infos.id);
     Object.assign(item, infos);
-    scrapperAddItem(user, item);
+    scrapperAddItem(user, item, index);
   });
 }
 
 const scrapperMamytwinkScrap = (html, user) => {
   const $ = cheerio.load(html);
 
-  $('.article_wrapper').filter(function() {
+  $('.article_wrapper').filter(function(index) {
     const data = $(this);
 
     const infos = {};
@@ -74,7 +76,7 @@ const scrapperMamytwinkScrap = (html, user) => {
 
     const item = new ScrapperModel('mamytwink', infos.url);
     Object.assign(item, infos);
-    scrapperAddItem(user, item);
+    scrapperAddItem(user, item, index);
   });
 }
 
