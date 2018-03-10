@@ -1,6 +1,7 @@
 <ng-template #showLogin>
-  <p>Please login.</p>
-  <button (click)="login()">Login with Google</button>
+  <form class="form-signin">
+    <button class="btn btn-lg btn-primary btn-block" type="submit" (click)="login()">Sign in with Google</button>
+  </form>
 </ng-template>
 
 <div *ngIf="afAuth.authState | async as user; else showLogin">
@@ -27,6 +28,7 @@
     <button type="submit">ENREGISTRER</button>
   </form>
 
+  <button class="btn btn-primary">Test Button</button>
   <h3>Items</h3>
   <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
   <ul>
