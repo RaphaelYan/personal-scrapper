@@ -25,44 +25,35 @@ class ScrapperModel {
     this.provider = provider;
     this.status = 'scrapped';
     this.url = '';
+    this.date = '';
   }
 };
 
 const scrapperAddItem = (user, item) => {
   if (!user.items.find(i => i.id === item.id)) {
-    // admin.firestore().collection('items').add(item); // WHY THE FUCK IS THIS NOT WORKING ? Error: Cannot use custom type "undefined" as a Firestore type.
-    // but this is ok: ????
-    console.log('on add:', item);
-    admin.firestore().collection('items').add({
-      id: item.id,
-      title: item.title,
-      userid: user.uid,
-      status: 'scrapped',
-      image: item.image,
-      provider: item.provider,
-      url: item.url
-    });
+    item.userid = user.uid;
+    console.log('===== on add =====');
+    console.log(item);
+    admin.firestore().collection('items').add(Object.assign({}, item));
   } else {
-    console.log('on add pas: existe deja');
+    console.log('===== on add pas: existe deja =====');
   }
 }
-
-// c'est possible en js des classes pour faire des interface joli etc ? C'est trop moche ca en javascript serieux :()
 
 const scrapperYoutubeScrap = (html, user) => {
   const $ = cheerio.load(html);
 
   $('.channels-content-item').filter(function() {
     const data = $(this);
-    const title = data.find('.yt-lockup-title').children().first().text();
-    const url = data.find('.yt-lockup-title').children().first().attr('href');
-    let id = data.find('.yt-lockup-video').attr('data-context-item-id');
-    const image = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
-    const item = new ScrapperModel('youtube', id);
-    item.title = title;
-    item.image = image;
-    item.userid = user.id;
-    item.url = url;
+
+    const infos = {};
+    infos['title'] = data.find('.yt-lockup-title').children().first().text();
+    infos['url'] = data.find('.yt-lockup-title').children().first().attr('href');
+    infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
+    infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
+
+    const item = new ScrapperModel('youtube', infos.id);
+    Object.assign(item, infos);
     scrapperAddItem(user, item);
   });
 }
@@ -72,16 +63,16 @@ const scrapperMamytwinkScrap = (html, user) => {
 
   $('.article_wrapper').filter(function() {
     const data = $(this);
-    const title = data.find('.article-titre .h1 a').text().trim();
-    const date = data.find('meta').attr('content');
-    const desc = data.find('.article-entete').text().trim();
-    const image = data.find('.vignette img').attr('src');
-    const url = data.find('.vignette a').attr('href');
-    const item = new ScrapperModel('mamytwink', url);
-    item.title = title;
-    item.image = image;
-    item.userid = user.id;
-    item.url = url;
+
+    const infos = {};
+    infos['title'] = data.find('.article-titre .h1 a').text().trim();
+    infos['date'] = data.find('meta').attr('content');
+    infos['desc'] = data.find('.article-entete').text().trim();
+    infos['image'] = data.find('.vignette img').attr('src');
+    infos['url'] = data.find('.vignette a').attr('href');
+
+    const item = new ScrapperModel('mamytwink', infos.url);
+    Object.assign(item, infos);
     scrapperAddItem(user, item);
   });
 }

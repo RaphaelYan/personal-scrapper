@@ -4,39 +4,37 @@
   </form>
 </ng-template>
 
-<div *ngIf="afAuth.authState | async as user; else showLogin">
-  <!--The content below is only a placeholder and can be replaced.-->
-  <h1>Hello {{ user.displayName }}!</h1>
-  <button (click)="logout()">Logout</button>
+<main role="main" *ngIf="afAuth.authState | async as user; else showLogin">
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Hello {{ user.displayName }}!</h1>
+      <button (click)="logout()">Logout</button>
 
-  <form (submit)="onSubmitScrap()">
-    <select [(ngModel)]="form.provider" name="provider">
-      <option value="youtube">Youtube</option>
-      <option value="mamytwink">MamyTwink</option>
-    </select>
-    <select [(ngModel)]="form.url" name="url">
-      <option value="" disabled>Selectionnez un site</option>
-      <option *ngFor="let site of sites | async" [value]="site.payload.doc.data().url">{{ site.payload.doc.data().label }}</option>
-    </select>
-    <button type="submit" [disabled]="!form.url">SCRAPPER</button>
-  </form>
-  <br>
-  <form (submit)="onSubmitSite()">
-    Ajouter un site :
-    <input [(ngModel)]="formSite.label" name="label" placeholder="label">
-    <input [(ngModel)]="formSite.url" name="url" placeholder="url">
-    <button type="submit">ENREGISTRER</button>
-  </form>
+      <form (submit)="onSubmitScrap()">
+        <select [(ngModel)]="form.provider" name="provider">
+          <option value="youtube">Youtube</option>
+          <option value="mamytwink">MamyTwink</option>
+        </select>
+        <select [(ngModel)]="form.url" name="url">
+          <option value="" disabled>Selectionnez un site</option>
+          <option *ngFor="let site of sites | async" [value]="site.payload.doc.data().url">{{ site.payload.doc.data().label }}</option>
+        </select>
+        <button type="submit" [disabled]="!form.url">SCRAPPER</button>
+      </form>
+      <br>
+      <form (submit)="onSubmitSite()">
+        Ajouter un site :
+        <input [(ngModel)]="formSite.label" name="label" placeholder="label">
+        <input [(ngModel)]="formSite.url" name="url" placeholder="url">
+        <button type="submit">ENREGISTRER</button>
+      </form>
+    </div>
+  </div>
 
-  <button class="btn btn-primary">Test Button</button>
-  <h3>Items</h3>
-  <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
-  <ul>
-    <li *ngFor="let item of items | async">
-      <item-scrapped [item]="item.payload.doc.data()"></item-scrapped>
-      <a (click)="remove(item)">Remove</a>
-      <a (click)="select(item)">Select</a>
-    </li>
-  </ul>
-
-</div>
+  <div class="container">
+    <button (click)="filterByStatus(status)" *ngFor="let status of statuses">{{ status.label }}</button>
+    <div class="card-columns">
+      <item-scrapped *ngFor="let item of items | async" [item]="item.payload.doc.data()"></item-scrapped>
+    </div>
+  </div>
+</main>

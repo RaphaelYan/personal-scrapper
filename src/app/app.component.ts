@@ -53,6 +53,9 @@ export class AppComponent {
   constructor(public afAuth: AngularFireAuth, private afs: AngularFirestore, private http: HttpClient) {
     this.afAuth.authState.subscribe((user) => {
       this.user = user;
+      if (!user) {
+        return;
+      }
       this.initFetch();
       this.initSites();
     });
