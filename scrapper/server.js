@@ -52,7 +52,7 @@ const scrapperExtremeDown = (html, user) => {
     const infos = {};
     infos['title'] = data.find('.top-title').text();
     infos['url'] = 'https://www.extreme-down.im' + data.attr('href');
-    infos['image'] = data.find('.img-post').attr('src');
+    infos['image'] = data.find('.img-post').attr('src').replace('.th.', '.');;
 
     const item = new ScrapperModel('youtube', infos.url);
     Object.assign(item, infos);
