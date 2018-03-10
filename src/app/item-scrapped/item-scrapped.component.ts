@@ -1,13 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
+  /* tslint:disable */
   selector: '[item-scrapped]',
+  /* tslint:enable */
   templateUrl: './item-scrapped.component.html',
   styleUrls: ['./item-scrapped.component.scss']
 })
 export class ItemScrappedComponent implements OnInit {
-
+  /* tslint:disable */
   @Input('item-scrapped') public item;
+  /* tslint:enable */
   private swipeCoord?: [number, number];
   private swipeTime?: number;
 
