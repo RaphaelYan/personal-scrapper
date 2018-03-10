@@ -26,6 +26,7 @@ class ScrapperModel {
     this.status = 'scrapped';
     this.url = '';
     this.date = '';
+    this.desc = '';
   }
 };
 
@@ -48,7 +49,7 @@ const scrapperYoutubeScrap = (html, user) => {
 
     const infos = {};
     infos['title'] = data.find('.yt-lockup-title').children().first().text();
-    infos['url'] = data.find('.yt-lockup-title').children().first().attr('href');
+    infos['url'] = "http://www.youtube.com" + data.find('.yt-lockup-title').children().first().attr('href');
     infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
     infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
 
@@ -69,7 +70,7 @@ const scrapperMamytwinkScrap = (html, user) => {
     infos['date'] = data.find('meta').attr('content');
     infos['desc'] = data.find('.article-entete').text().trim();
     infos['image'] = data.find('.vignette img').attr('src');
-    infos['url'] = data.find('.vignette a').attr('href');
+    infos['url'] = "http://www.mamytwink.com" + data.find('.vignette a').attr('href');
 
     const item = new ScrapperModel('mamytwink', infos.url);
     Object.assign(item, infos);

@@ -62,7 +62,7 @@
       </div>
 
       <div class="card-columns">
-        <item-scrapped *ngFor="let item of items | async" [item]="item.payload.doc.data()"></item-scrapped>
+        <item-scrapped *ngFor="let item of items | async" [item]="item"></item-scrapped>
       </div>
     </div>
   </main>
