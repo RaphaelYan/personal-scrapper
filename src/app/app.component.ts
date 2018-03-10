@@ -11,6 +11,11 @@ interface Item {
   status: string;
 }
 
+interface Site {
+  userid: string;
+  url: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,9 +24,15 @@ interface Item {
 export class AppComponent {
   private itemsCollection: AngularFirestoreCollection<Item>;
   public items: Observable<DocumentChangeAction[]>;
+  private sitesCollection: AngularFirestoreCollection<Site>;
+  public sites: Observable<DocumentChangeAction[]>;
 
   public form: any = {
     provider: 'youtube',
+    url: ''
+  };
+  public formSite: any = {
+    label: '',
     url: ''
   };
   public user: any;
@@ -43,6 +54,7 @@ export class AppComponent {
     this.afAuth.authState.subscribe((user) => {
       this.user = user;
       this.initFetch();
+      this.initSites();
     });
   }
 
@@ -50,7 +62,14 @@ export class AppComponent {
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
       return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus);
     });
-    this.items = this.itemsCollection.snapshotChanges()
+    this.items = this.itemsCollection.snapshotChanges();
+  }
+
+  public initSites() {
+    this.sitesCollection = this.afs.collection<Site>('sites', (ref) => {
+      return ref.where('userid', '==', this.user.uid);
+    });
+    this.sites = this.sitesCollection.snapshotChanges();
   }
 
   public login() {
@@ -61,7 +80,7 @@ export class AppComponent {
     this.afAuth.auth.signOut();
   }
 
-  public onSubmit() {
+  public onSubmitScrap() {
     const body = {
       url: this.form.url,
       provider: this.form.provider,
@@ -74,6 +93,17 @@ export class AppComponent {
     .subscribe((data) => {
       console.log('data', data);
     });
+  }
+
+  public onSubmitSite() {
+    const body = {
+      url: this.formSite.url,
+      label: this.formSite.label,
+      userid: this.user.uid
+    };
+    this.sitesCollection.add(body);
+    this.formSite.url = '';
+    this.formSite.label = '';
   }
 
   public remove(item) {
