@@ -97,6 +97,24 @@ const scrapperYoutubeScrap = (html, user) => {
   });
 }
 
+const scrapperTwitterScrap = (html, user) => {
+  const $ = cheerio.load(html);
+
+  $('.tweet').filter(function(index) {
+    const data = $(this);
+    const infos = {};
+    infos['title'] = data.find('.FullNameGroup').children().text().trim() + ' ' + data.find('.tweet-timestamp').text();
+    infos['url'] = "https://www.twitter.com" + data.find('.tweet-timestamp').attr('href');
+    infos['id'] = data.attr('data-tweet-id');
+    infos['image'] = data.find('.AdaptiveMedia-container img').attr('src');
+    infos['desc'] = data.find('.tweet-text').text();
+
+    const item = new ScrapperModel('twitter', infos.id);
+    Object.assign(item, infos);
+    scrapperAddItem(user, item, index);
+  });
+}
+
 const scrapperMamytwinkScrap = (html, user) => {
   const $ = cheerio.load(html);
 
@@ -131,6 +149,8 @@ const scrapperScrap = (body, user) => {
           scrapperExtremeDown(html, user);
         case 'pshiiit':
           scrapperPshiiitScrap(html, user);
+        case 'twitter':
+          scrapperTwitterScrap(html, user);
       }
       resolve();
     });
