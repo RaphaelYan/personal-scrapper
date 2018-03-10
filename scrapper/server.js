@@ -59,6 +59,15 @@ const parseItems = (html, user, selector, provider, parseInfos) => {
   });
 }
 
+const checkValues = (infos) => {
+  for (let key in infos) {
+    if (!infos[key]) {
+      delete infos[key];
+    }
+  }
+  return infos;
+}
+
 const scrapperExtremeDown = (html, user, provider) => {
   const parseInfos = (data) => {
     const infos = {};
@@ -66,7 +75,7 @@ const scrapperExtremeDown = (html, user, provider) => {
     infos['desc'] = data.find('.top-lasttitle').text();
     infos['url'] = 'https://www.extreme-down.im' + data.attr('href');
     infos['image'] = data.find('.img-post').attr('src').replace('.th.', '.');
-    return infos;
+    return checkValues(infos);
   };
   parseItems(html, user, '#toparticle .top-last, #Films .top-last, #series .top-last', provider, parseInfos);
 }
@@ -78,7 +87,7 @@ const scrapperPshiiitScrap = (html, user, provider) => {
     infos['desc'] = data.find('.mh-excerpt').text().trim().replace('(lire la suite ►)', '');
     infos['url'] = data.find('.cp-xl-title a').attr('href');
     infos['image'] = data.find('.cp-thumb-xl a img').attr('src');
-    return infos;
+    return checkValues(infos);
   };
   parseItems(html, user, '#mh_custom_posts-11 .cp-wrap', provider, parseInfos);
 }
@@ -89,7 +98,7 @@ const scrapperYoutubeScrap = (html, user, provider) => {
     infos['title'] = data.find('.yt-lockup-title').children().first().text();
     infos['url'] = 'http://www.youtube.com' + data.find('.yt-lockup-title').children().first().attr('href');
     infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
-    return infos;
+    return checkValues(infos);
   };
   parseItems(html, user, '.channels-content-item', provider, parseInfos);
 }
@@ -101,9 +110,20 @@ const scrapperTwitterScrap = (html, user, provider) => {
     infos['desc'] = data.find('.tweet-text').text();
     infos['url'] = "https://www.twitter.com" + data.find('.tweet-timestamp').attr('href');
     infos['image'] = data.find('.AdaptiveMedia-container img').attr('src');
-    return infos;
+    return checkValues(infos);
   };
   parseItems(html, user, '.tweet', provider, parseInfos);
+}
+
+const scrapperRedditScrap = (html, user, provider) => {
+  const parseInfos = (data) => {
+    const infos = {};
+    infos['title'] = data.find('a.title.may-blank').text().trim();
+    infos['url'] = data.find('.buttons .first').children().attr('href');
+    infos['image'] = data.find('.thumbnail img').attr('src');
+    return checkValues(infos);
+  };
+  parseItems(html, user, '#siteTable .thing', provider, parseInfos);
 }
 
 const scrapperMamytwinkScrap = (html, user, provider) => {
@@ -135,6 +155,8 @@ const scrapperScrap = (body, user) => {
           scrapperTwitterScrap(html, user, body.provider);
         case 'pshiiit':
           scrapperPshiiitScrap(html, user, body.provider);
+        case 'reddit':
+          scrapperRedditScrap(html, user, body.provider);
       }
       resolve();
     });
@@ -192,16 +214,15 @@ app.post('/scrape', (req, res) => {
 // this function is for tests
 app.get('/scrape', (req, res) => {
 
-  request('https://www.extreme-down.im', (error, response, html) => {
+  request('https://www.reddit.com/r/wow/', (error, response, html) => {
     if (!error) {
       var $ = cheerio.load(html);
-      $('#toparticle .top-last').filter(function(index) {
+      $('#siteTable .thing').filter(function(index) {
         var data = $(this);
         const infos = {};
-        infos['title'] = data.find('.top-title').text();
-        infos['url'] = "https://www.extreme-down.im" + data.attr('href');
-        infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
-        infos['image'] = data.find('.img-post').attr('src');
+        infos['title'] = data.find('a.title.may-blank').text().trim();
+        infos['url'] = data.find('.buttons .first').children().attr('href');
+        infos['image'] = data.find('.thumbnail img').attr('src');
         console.log('-----');
         console.log(infos);
       });
