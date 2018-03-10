@@ -8,8 +8,8 @@
     <p class="card-text">{{itemData.desc }}</p>
   </div>
   <div class="btn-group">
-      <button (click)="remove()" type="button" class="btn btn-danger" *ngIf="itemData.status != 'deleted'">Enlever</button>
-      <button (click)="scrapped()" type="button" class="btn btn-primary" *ngIf="itemData.status != 'scrapped'">Restaurer</button>
-      <button (click)="accept()" type="button" class="btn btn-success" *ngIf="itemData.status != 'accepted'">Garder</button>
-    </div>
+    <button (click)="setStatus('deletedForce')" type="button" class="btn btn-danger" [class.btn-block]="itemData.status === 'accepted'" *ngIf="itemData.status === 'deleted' || itemData.status === 'accepted'">Enlever Définitivement</button>
+    <button (click)="setStatus('deleted')" type="button" class="btn btn-warning" *ngIf="itemData.status === 'scrapped'">Enlever</button>
+    <button (click)="setStatus('accepted')" type="button" class="btn btn-success" *ngIf="itemData.status === 'deleted' || itemData.status === 'scrapped'">Garder</button>
+  </div>
 </div>

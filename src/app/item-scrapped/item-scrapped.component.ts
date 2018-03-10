@@ -17,16 +17,8 @@ export class ItemScrappedComponent implements OnInit {
     this.itemData = this.item.payload.doc.data();
   }
 
-  public remove() {
-    this.item.payload.doc.ref.update({status: 'deleted'});
-  }
-
-  public accept() {
-    this.item.payload.doc.ref.update({status: 'accepted'});
-  }
-
-  public scrapped() {
-    this.item.payload.doc.ref.update({status: 'scrapped'});
+  public setStatus(status) {
+    this.item.payload.doc.ref.update({status: status});
   }
 
   swipe(e: TouchEvent, when: string): void {
@@ -44,12 +36,12 @@ export class ItemScrappedComponent implements OnInit {
       const duration = time - this.swipeTime;
       if ((duration < 1000 && Math.abs(direction[0]) > 30) && Math.abs(direction[0]) > Math.abs(direction[1] * 3)) {
         const swipe = direction[0] < 0 ? 'left' : 'right';
-        if (swipe === 'right' && this.itemData.status === 'scrapped' || this.itemData.status === 'deleted') {
-          this.accept();
-        } else if (swipe === 'left' && this.itemData.status === 'scrapped' || this.itemData.status === 'accepted') {
-          this.remove();
-        } else if (swipe === 'right' && this.itemData.status === 'deleted' || this.itemData.status === 'accepted') {
-          this.scrapped();
+        if (swipe === 'right' && (this.itemData.status === 'scrapped' || this.itemData.status === 'deleted')) {
+          this.setStatus('accepted');
+        } else if (swipe === 'left' && this.itemData.status === 'scrapped') {
+          this.setStatus('deleted');
+        } else if ((swipe === 'left' && this.itemData.status === 'deleted') || this.itemData.status === 'accepted') {
+          this.setStatus('deletedForce');
         }
       }
     }
