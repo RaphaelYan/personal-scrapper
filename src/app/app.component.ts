@@ -25,7 +25,7 @@ export class AppComponent {
   private itemsCollection: AngularFirestoreCollection<Item>;
   public items: Observable<DocumentChangeAction[]>;
   private sitesCollection: AngularFirestoreCollection<Site>;
-  public sites: DocumentChangeAction[];
+  public sites: Site[];
 
   public showForm: boolean = false;
 
@@ -54,7 +54,16 @@ export class AppComponent {
       value: 'accepted'
     }
   ];
+  public providers: any[] = [
+    { value: 'youtube', label: 'YouTube' },
+    { value: 'mamytwink', label: 'MamyTwink' },
+    { value: 'extreme-down', label: 'Extreme-down' },
+    { value: 'pshiiit', label: 'pshiiit' },
+    { value: 'twitter', label: 'Twitter' },
+    { value: 'reddit', label: 'Reddit' }
+  ];
   public currentStatus: string = 'scrapped';
+  public filterProvider: string = '';
 
   constructor(public afAuth: AngularFireAuth, private afs: AngularFirestore, private http: HttpClient) {
     this.afAuth.authState.subscribe((user) => {
@@ -80,9 +89,8 @@ export class AppComponent {
     this.sitesCollection = this.afs.collection<Site>('sites', (ref) => {
       return ref.where('userid', '==', this.user.uid);
     });
-    this.sitesCollection.snapshotChanges()
+    this.sitesCollection.valueChanges()
     .subscribe((sites) => {
-      console.log(sites);
       this.sites = sites;
     });
   }
@@ -129,5 +137,13 @@ export class AppComponent {
 
   public compareSelectedUrl(itemA, itemB) {
     return itemA && itemB && itemA.url === itemB.url;
+  }
+
+  public trackByScrapped(index, item) {
+    return item.payload.doc.data().id;
+  }
+
+  public trackBySite(index, item) {
+    return item.url;
   }
 }
