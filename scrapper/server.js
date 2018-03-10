@@ -51,6 +51,7 @@ const scrapperExtremeDown = (html, user) => {
 
     const infos = {};
     infos['title'] = data.find('.top-title').text();
+    infos['desc'] = data.find('.top-lasttitle').text();
     infos['url'] = 'https://www.extreme-down.im' + data.attr('href');
     infos['image'] = data.find('.img-post').attr('src').replace('.th.', '.');;
 
