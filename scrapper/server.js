@@ -16,6 +16,18 @@ admin.initializeApp({
 app.use(bodyParser.json());
 app.use(cors());
 
+class ScrapperModel {
+  constructor(provider, id) {
+    this.title = '';
+    this.id = provider + '-' + id;
+    this.image = '';
+    this.userid = '';
+    this.provider = provider;
+    this.status = 'scrapped';
+    this.url = '';
+  }
+};
+
 const scrapperAddItem = (user, item) => {
   if (!user.items.find(i => i.id === item.id)) {
     // admin.firestore().collection('items').add(item); // WHY THE FUCK IS THIS NOT WORKING ? Error: Cannot use custom type "undefined" as a Firestore type.
@@ -46,10 +58,11 @@ const scrapperYoutubeScrap = (html, user) => {
     const url = data.find('.yt-lockup-title').children().first().attr('href');
     let id = data.find('.yt-lockup-video').attr('data-context-item-id');
     const image = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
-    id = 'youtube' + '-' + id;
-    const item = { // bouuuuh les interface c'est en typescript. Comment on fait des interface et de l'heritage en js ? :'(
-      title: title, id: id, image: image, userid: user.id, provider: 'youtube', status: 'scrapped', url: url
-    }
+    const item = new ScrapperModel('youtube', id);
+    item.title = title;
+    item.image = image;
+    item.userid = user.id;
+    item.url = url;
     scrapperAddItem(user, item);
   });
 }
@@ -64,10 +77,11 @@ const scrapperMamytwinkScrap = (html, user) => {
     const desc = data.find('.article-entete').text().trim();
     const image = data.find('.vignette img').attr('src');
     const url = data.find('.vignette a').attr('href');
-    const id = 'mamytwink-' + url;
-    const item = { // bouuuuh
-      title: title, id: id, image: image, userid: user.id, provider: 'mamytwink', status: 'scrapped', url: url, date: date
-    }
+    const item = new ScrapperModel('mamytwink', url);
+    item.title = title;
+    item.image = image;
+    item.userid = user.id;
+    item.url = url;
     scrapperAddItem(user, item);
   });
 }
@@ -119,7 +133,6 @@ const scrapperGetUserAndScrap = (req) => {
 
 app.post('/scrape', (req, res) => {
   // console.log(req.body);
-  let user = null;
 
   // console.log('user ' + userid + ' scrapping ' + url);
   scrapperGetUserAndScrap(req)
