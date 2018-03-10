@@ -1,4 +1,4 @@
-<div (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
+<div class="card-swipe" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
   <img class="card-img-top" [src]="itemData.image">
   <div class="card-body">
     <h5 class="card-title">{{ itemData.title }} </h5>
@@ -6,9 +6,6 @@
       <i class="fa fa-link"></i>
     </a>
     <p class="card-text">{{itemData.desc }}</p>
-  </div>
-  <div class="card-footer" *ngIf="itemData.date">
-    <small class="text-muted" *ngIf="itemData.date">{{ itemData.date }}</small>
   </div>
   <div class="btn-group">
       <button (click)="remove()" type="button" class="btn btn-danger" *ngIf="itemData.status != 'deleted'">Enlever</button>

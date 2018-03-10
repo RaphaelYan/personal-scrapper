@@ -43,6 +43,23 @@ const scrapperAddItem = (user, item, index) => {
   }
 }
 
+const scrapperExtremeDown = (html, user) => {
+  const $ = cheerio.load(html);
+
+  $('#toparticle .top-last, #Films .top-last, #series .top-last').filter(function(index) {
+    const data = $(this);
+
+    const infos = {};
+    infos['title'] = data.find('.top-title').text();
+    infos['url'] = 'https://www.extreme-down.im' + data.attr('href');
+    infos['image'] = data.find('.img-post').attr('src');
+
+    const item = new ScrapperModel('youtube', infos.url);
+    Object.assign(item, infos);
+    scrapperAddItem(user, item, index);
+  });
+}
+
 const scrapperYoutubeScrap = (html, user) => {
   const $ = cheerio.load(html);
 
@@ -51,7 +68,7 @@ const scrapperYoutubeScrap = (html, user) => {
 
     const infos = {};
     infos['title'] = data.find('.yt-lockup-title').children().first().text();
-    infos['url'] = "http://www.youtube.com" + data.find('.yt-lockup-title').children().first().attr('href');
+    infos['url'] = 'http://www.youtube.com' + data.find('.yt-lockup-title').children().first().attr('href');
     infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
     infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
 
@@ -72,7 +89,7 @@ const scrapperMamytwinkScrap = (html, user) => {
     infos['date'] = data.find('meta').attr('content');
     infos['desc'] = data.find('.article-entete').text().trim();
     infos['image'] = data.find('.vignette img').attr('src');
-    infos['url'] = "http://www.mamytwink.com" + data.find('.vignette a').attr('href');
+    infos['url'] = 'http://www.mamytwink.com' + data.find('.vignette a').attr('href');
 
     const item = new ScrapperModel('mamytwink', infos.url);
     Object.assign(item, infos);
@@ -91,6 +108,8 @@ const scrapperScrap = (body, user) => {
           scrapperYoutubeScrap(html, user);
         case 'mamytwink':
           scrapperMamytwinkScrap(html, user);
+        case 'extreme-down':
+          scrapperExtremeDown(html, user);
       }
       resolve();
     });
@@ -148,21 +167,18 @@ app.post('/scrape', (req, res) => {
 // this function is for tests
 app.get('/scrape', (req, res) => {
 
-  request('https://www.mamytwink.com/', (error, response, html) => {
+  request('https://www.extreme-down.im', (error, response, html) => {
     if (!error) {
       var $ = cheerio.load(html);
-      $('.article_wrapper').filter(function() {
+      $('#toparticle .top-last').filter(function(index) {
         var data = $(this);
-        let title = data.find('.article-titre .h1 a').text().trim();
-        let date = data.find('meta').attr('content');
-        let desc = data.find('.article-entete').text().trim();
-        let image = data.find('.vignette img').attr('src');
-        let url = data.find('.vignette a').attr('href');
-        let id = 'mamytwink-' + url;
+        const infos = {};
+        infos['title'] = data.find('.top-title').text();
+        infos['url'] = "https://www.extreme-down.im" + data.attr('href');
+        infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
+        infos['image'] = data.find('.img-post').attr('src');
         console.log('-----');
-        console.log(title);
-        console.log(date);
-        console.log(image);
+        console.log(infos);
       });
       res.send(html);
     } else {
