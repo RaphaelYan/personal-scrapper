@@ -58,6 +58,7 @@ const scrapperExtremeDown = (html, user) => {
     Object.assign(item, infos);
     scrapperAddItem(user, item, index);
   });
+}
 
   const scrapperPshiiitScrap = (html, user) => {
   const $ = cheerio.load(html);
