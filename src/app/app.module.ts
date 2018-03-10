@@ -10,12 +10,12 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 
-import { ItemComponent } from './item';
+import { ItemScrappedComponent } from './item-scrapped/item-scrapped.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ItemComponent
+    ItemScrappedComponent
   ],
   imports: [
     BrowserModule,
