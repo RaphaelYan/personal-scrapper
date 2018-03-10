@@ -10,13 +10,14 @@
 
   <form (submit)="onSubmitScrap()">
     <select [(ngModel)]="form.provider" name="provider">
-      <option value="youtube" selected>Youtube</option>
-      <option value="mamytwink" selected>MamyTwink</option>
+      <option value="youtube">Youtube</option>
+      <option value="mamytwink">MamyTwink</option>
     </select>
     <select [(ngModel)]="form.url" name="url">
+      <option value="" disabled>Selectionnez un site</option>
       <option *ngFor="let site of sites | async" [value]="site.payload.doc.data().url">{{ site.payload.doc.data().label }}</option>
     </select>
-    <button type="submit">SCRAPPER</button>
+    <button type="submit" [disabled]="!form.url">SCRAPPER</button>
   </form>
   <form (submit)="onSubmitSite()">
     <br>
