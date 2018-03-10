@@ -27,7 +27,7 @@
           <div class="form-group mb-2 col-md-4">
             <select class="form-control" [(ngModel)]="selectedUrl" name="url" [compareWith]="compareSelectedUrl">
               <option value="" disabled>Selectionnez une url</option>
-              <option *ngFor="let site of sites | async" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
+              <option *ngFor="let site of sites" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
             </select>
           </div>
           <div class="mb-2 col-md-4">

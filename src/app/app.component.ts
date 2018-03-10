@@ -25,7 +25,7 @@ export class AppComponent {
   private itemsCollection: AngularFirestoreCollection<Item>;
   public items: Observable<DocumentChangeAction[]>;
   private sitesCollection: AngularFirestoreCollection<Site>;
-  public sites: Observable<DocumentChangeAction[]>;
+  public sites: DocumentChangeAction[];
 
   public showForm: boolean = false;
 
@@ -78,7 +78,11 @@ export class AppComponent {
     this.sitesCollection = this.afs.collection<Site>('sites', (ref) => {
       return ref.where('userid', '==', this.user.uid);
     });
-    this.sites = this.sitesCollection.snapshotChanges();
+    this.sitesCollection.snapshotChanges()
+    .subscribe((sites) => {
+      console.log(sites);
+      this.sites = sites;
+    });
   }
 
   public login() {
