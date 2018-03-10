@@ -1,7 +1,7 @@
 <div class="card-swipe" (touchstart)="swipe($event, 'start')" (touchend)="swipe($event, 'end')">
   <img class="card-img-top" [src]="itemData.image">
   <div class="card-body">
-    <h5 class="card-title">{{ itemData.title }} </h5>
+    <h5 class="card-title">{{ itemData.title }}</h5>
     <a [href]="itemData.url" target="_blank">
       <i class="fa fa-link"></i>
     </a>

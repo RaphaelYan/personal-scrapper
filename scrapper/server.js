@@ -30,10 +30,9 @@ class ScrapperModel {
   }
 };
 
-const scrapperAddItem = (user, item, index) => {
+const scrapperAddItem = (user, item, timestampIndexed) => {
   if (!user.items.find(i => i.id === item.id)) {
-    const now = Date.now();
-    item.timestamp= now + index;
+    item.timestamp = timestampIndexed;
     item.userid = user.uid;
     console.log('===== on add =====');
     console.log(item);
@@ -43,95 +42,85 @@ const scrapperAddItem = (user, item, index) => {
   }
 }
 
-const scrapperExtremeDown = (html, user) => {
+const parseItems = (html, user, selector, provider, parseInfos) => {
   const $ = cheerio.load(html);
 
-  $('#toparticle .top-last, #Films .top-last, #series .top-last').filter(function(index) {
+  const items = $(selector);
+  let indexes = items.length;
+  const now = Date.now();
+  items.filter(function() {
     const data = $(this);
 
+    const infos = parseInfos(data);
+
+    const item = new ScrapperModel(provider, infos.url);
+    Object.assign(item, infos);
+    scrapperAddItem(user, item, now + indexes);
+    indexes -= 1;
+  });
+}
+
+const scrapperExtremeDown = (html, user, provider) => {
+  const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.top-title').text();
     infos['desc'] = data.find('.top-lasttitle').text();
     infos['url'] = 'https://www.extreme-down.im' + data.attr('href');
-    infos['image'] = data.find('.img-post').attr('src').replace('.th.', '.');;
-
-    const item = new ScrapperModel('youtube', infos.url);
-    Object.assign(item, infos);
-    scrapperAddItem(user, item, index);
-  });
+    infos['image'] = data.find('.img-post').attr('src').replace('.th.', '.');
+    return infos;
+  };
+  parseItems(html, user, '#toparticle .top-last, #Films .top-last, #series .top-last', provider, parseInfos);
 }
 
-  const scrapperPshiiitScrap = (html, user) => {
-  const $ = cheerio.load(html);
-
-  $('#mh_custom_posts-11 .cp-wrap').filter(function(index) {
-    const data = $(this);
+const scrapperPshiiitScrap = (html, user, provider) => {
+  const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.cp-xl-title').text().trim();
     infos['url'] = data.find('.cp-xl-title a').attr('href');
     infos['desc'] = data.find('.mh-excerpt').text().trim().replace('(lire la suite ►)', '');
     infos['id'] = infos['url'];
     infos['image'] = data.find('.cp-thumb-xl a img').attr('src');
-
-    const item = new ScrapperModel('youtube', infos.id);
-    Object.assign(item, infos);
-    scrapperAddItem(user, item, index);
-  });
+    return infos;
+  };
+  parseItems(html, user, '#mh_custom_posts-11 .cp-wrap', provider, parseInfos);
 }
 
-const scrapperYoutubeScrap = (html, user) => {
-  const $ = cheerio.load(html);
-
-  $('.channels-content-item').filter(function(index) {
-    const data = $(this);
-
+const scrapperYoutubeScrap = (html, user, provider) => {
+  const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.yt-lockup-title').children().first().text();
     infos['url'] = 'http://www.youtube.com' + data.find('.yt-lockup-title').children().first().attr('href');
     infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
     infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
-
-    const item = new ScrapperModel('youtube', infos.id);
-    Object.assign(item, infos);
-    scrapperAddItem(user, item, index);
-  });
+    return infos;
+  };
+  parseItems(html, user, '.channels-content-item', provider, parseInfos);
 }
 
-const scrapperTwitterScrap = (html, user) => {
-  const $ = cheerio.load(html);
-
-  $('.tweet').filter(function(index) {
-    const data = $(this);
+const scrapperTwitterScrap = (html, user, provider) => {
+  const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.FullNameGroup').children().text().trim() + ' ' + data.find('.tweet-timestamp').text();
     infos['url'] = "https://www.twitter.com" + data.find('.tweet-timestamp').attr('href');
     infos['id'] = data.attr('data-tweet-id');
     infos['image'] = data.find('.AdaptiveMedia-container img').attr('src');
     infos['desc'] = data.find('.tweet-text').text();
-
-    const item = new ScrapperModel('twitter', infos.id);
-    Object.assign(item, infos);
-    scrapperAddItem(user, item, index);
-  });
+    return infos;
+  };
+  parseItems(html, user, '.tweet', provider, parseInfos);
 }
 
-const scrapperMamytwinkScrap = (html, user) => {
-  const $ = cheerio.load(html);
-
-  $('.article_wrapper').filter(function(index) {
-    const data = $(this);
-
+const scrapperMamytwinkScrap = (html, user, provider) => {
+  const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.article-titre .h1 a').text().trim();
     infos['date'] = data.find('meta').attr('content');
     infos['desc'] = data.find('.article-entete').text().trim();
     infos['image'] = data.find('.vignette img').attr('src');
     infos['url'] = 'http://www.mamytwink.com' + data.find('.vignette a').attr('href');
-
-    const item = new ScrapperModel('mamytwink', infos.url);
-    Object.assign(item, infos);
-    scrapperAddItem(user, item, index);
-  });
+    return infos;
+  };
+  parseItems(html, user, '.article_wrapper', provider, parseInfos);
 }
 
 const scrapperScrap = (body, user) => {
@@ -142,15 +131,15 @@ const scrapperScrap = (body, user) => {
       }
       switch (body.provider) {
         case 'youtube':
-          scrapperYoutubeScrap(html, user);
+          scrapperYoutubeScrap(html, user, body.provider);
         case 'mamytwink':
-          scrapperMamytwinkScrap(html, user);
+          scrapperMamytwinkScrap(html, user, body.provider);
         case 'extreme-down':
-          scrapperExtremeDown(html, user);
-        case 'pshiiit':
-          scrapperPshiiitScrap(html, user);
+        scrapperExtremeDown(html, user, body.provider);
         case 'twitter':
-          scrapperTwitterScrap(html, user);
+          scrapperTwitterScrap(html, user, body.provider);
+        case 'pshiiit':
+          scrapperPshiiitScrap(html, user, body.provider);
       }
       resolve();
     });

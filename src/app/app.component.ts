@@ -69,7 +69,7 @@ export class AppComponent {
 
   public initFetch() {
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
-      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus).orderBy('timestamp');
+      return ref.where('userid', '==', this.user.uid).where('status', '==', this.currentStatus).orderBy('timestamp', this.currentStatus === 'scrapped' ? 'desc' : 'asc');
     });
     this.items = this.itemsCollection.snapshotChanges();
   }
