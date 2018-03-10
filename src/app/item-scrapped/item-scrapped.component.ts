@@ -30,6 +30,9 @@ export class ItemScrappedComponent implements OnInit {
   }
 
   swipe(e: TouchEvent, when: string): void {
+    if (window.screen.width > 575) {
+      return;
+    }
     const coord: [number, number] = [e.changedTouches[0].pageX, e.changedTouches[0].pageY];
     const time = new Date().getTime();
 
