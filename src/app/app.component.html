@@ -27,7 +27,7 @@
           <div class="form-group mb-2 col-md-4">
             <select class="form-control" [(ngModel)]="selectedUrl" name="url" [compareWith]="compareSelectedUrl">
               <option value="" disabled>Selectionnez une url</option>
-              <option *ngFor="let site of sites" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
+              <option *ngFor="let site of sites; trackBy: trackBySite" [ngValue]="site">{{ site.label }}</option>
             </select>
           </div>
           <div class="mb-2 col-md-4">
@@ -39,13 +39,7 @@
           <div class="form-group mb-2 col-md-3">
             <select class="form-control" [(ngModel)]="formSite.provider" name="provider">
               <option value="">Sélectionnez un provider</option>
-              <option value="youtube">Youtube</option>
-              <option value="mamytwink">MamyTwink</option>
-              <option value="extreme-down">extreme-down</option>
-              <option value="pshiiit">Pshiiit</option>
-              <option value="twitter">Twitter</option>
-              <option value="reddit">Reddit</option>
-
+              <option *ngFor="let provider of providers" [value]="provider.value">{{ provider.label }}</option>
             </select>
           </div>
           <div class="form-group mb-2 col-md-3">
@@ -65,9 +59,19 @@
       <div class="btn-group">
         <button type="button" class="btn {{ currentStatus === status.value ? status.btnActive : status.btnOutline }}" *ngFor="let status of statuses" (click)="filterByStatus(status)">{{ status.label }}</button>
       </div>
+      <div class="row">
+        <div class="form-group mb-2 col-md-4 offset-md-4">
+          <select class="form-control" [(ngModel)]="filterProvider">
+            <option value="">Sélectionnez un provider</option>
+            <option *ngFor="let provider of providers" [value]="provider.value">{{ provider.label }}</option>
+          </select>
+        </div>
+      </div>
 
       <div class="card-deck">
-        <div class="card" *ngFor="let item of items | async" [item-scrapped]="item"></div>
+        <ng-template ngFor let-item [ngForOf]="items | async" [ngForTrackBy]="trackByScrapped">
+          <div class="card" [item-scrapped]="item" *ngIf="filterProvider ? item.payload.doc.data().provider === filterProvider : true"></div>
+        </ng-template>
       </div>
     </div>
   </main>
