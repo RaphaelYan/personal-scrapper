@@ -78,7 +78,6 @@ const scrapperPshiiitScrap = (html, user, provider) => {
     infos['title'] = data.find('.cp-xl-title').text().trim();
     infos['url'] = data.find('.cp-xl-title a').attr('href');
     infos['desc'] = data.find('.mh-excerpt').text().trim().replace('(lire la suite ►)', '');
-    infos['id'] = infos['url'];
     infos['image'] = data.find('.cp-thumb-xl a img').attr('src');
     return infos;
   };
@@ -90,7 +89,6 @@ const scrapperYoutubeScrap = (html, user, provider) => {
     const infos = {};
     infos['title'] = data.find('.yt-lockup-title').children().first().text();
     infos['url'] = 'http://www.youtube.com' + data.find('.yt-lockup-title').children().first().attr('href');
-    infos['id'] = data.find('.yt-lockup-video').attr('data-context-item-id');
     infos['image'] = data.find('.yt-thumb-clip').children().first().attr('src').replace(/hqdefault/i, 'sddefault');
     return infos;
   };
@@ -102,7 +100,6 @@ const scrapperTwitterScrap = (html, user, provider) => {
     const infos = {};
     infos['title'] = data.find('.FullNameGroup').children().text().trim() + ' ' + data.find('.tweet-timestamp').text();
     infos['url'] = "https://www.twitter.com" + data.find('.tweet-timestamp').attr('href');
-    infos['id'] = data.attr('data-tweet-id');
     infos['image'] = data.find('.AdaptiveMedia-container img').attr('src');
     infos['desc'] = data.find('.tweet-text').text();
     return infos;
