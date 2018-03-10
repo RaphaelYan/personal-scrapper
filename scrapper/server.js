@@ -58,6 +58,23 @@ const scrapperExtremeDown = (html, user) => {
     Object.assign(item, infos);
     scrapperAddItem(user, item, index);
   });
+
+  const scrapperPshiiitScrap = (html, user) => {
+  const $ = cheerio.load(html);
+
+  $('#mh_custom_posts-11 .cp-wrap').filter(function(index) {
+    const data = $(this);
+    const infos = {};
+    infos['title'] = data.find('.cp-xl-title').text().trim();
+    infos['url'] = data.find('.cp-xl-title a').attr('href');
+    infos['desc'] = data.find('.mh-excerpt').text().trim().replace('(lire la suite ►)', '');
+    infos['id'] = infos['url'];
+    infos['image'] = data.find('.cp-thumb-xl a img').attr('src');
+
+    const item = new ScrapperModel('youtube', infos.id);
+    Object.assign(item, infos);
+    scrapperAddItem(user, item, index);
+  });
 }
 
 const scrapperYoutubeScrap = (html, user) => {
@@ -110,6 +127,8 @@ const scrapperScrap = (body, user) => {
           scrapperMamytwinkScrap(html, user);
         case 'extreme-down':
           scrapperExtremeDown(html, user);
+        case 'pshiiit':
+          scrapperPshiiitScrap(html, user);
       }
       resolve();
     });
