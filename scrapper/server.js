@@ -25,7 +25,6 @@ class ScrapperModel {
     this.provider = provider;
     this.status = 'scrapped';
     this.url = '';
-    this.date = '';
     this.desc = '';
   }
 };
@@ -76,8 +75,8 @@ const scrapperPshiiitScrap = (html, user, provider) => {
   const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.cp-xl-title').text().trim();
-    infos['url'] = data.find('.cp-xl-title a').attr('href');
     infos['desc'] = data.find('.mh-excerpt').text().trim().replace('(lire la suite ►)', '');
+    infos['url'] = data.find('.cp-xl-title a').attr('href');
     infos['image'] = data.find('.cp-thumb-xl a img').attr('src');
     return infos;
   };
@@ -99,9 +98,9 @@ const scrapperTwitterScrap = (html, user, provider) => {
   const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.FullNameGroup').children().text().trim() + ' ' + data.find('.tweet-timestamp').text();
+    infos['desc'] = data.find('.tweet-text').text();
     infos['url'] = "https://www.twitter.com" + data.find('.tweet-timestamp').attr('href');
     infos['image'] = data.find('.AdaptiveMedia-container img').attr('src');
-    infos['desc'] = data.find('.tweet-text').text();
     return infos;
   };
   parseItems(html, user, '.tweet', provider, parseInfos);
@@ -111,10 +110,9 @@ const scrapperMamytwinkScrap = (html, user, provider) => {
   const parseInfos = (data) => {
     const infos = {};
     infos['title'] = data.find('.article-titre .h1 a').text().trim();
-    infos['date'] = data.find('meta').attr('content');
     infos['desc'] = data.find('.article-entete').text().trim();
-    infos['image'] = data.find('.vignette img').attr('src');
     infos['url'] = 'http://www.mamytwink.com' + data.find('.vignette a').attr('href');
+    infos['image'] = data.find('.vignette img').attr('src');
     return infos;
   };
   parseItems(html, user, '.article_wrapper', provider, parseInfos);
