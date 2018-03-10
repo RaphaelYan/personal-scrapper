@@ -27,11 +27,11 @@ export class AppComponent {
   private sitesCollection: AngularFirestoreCollection<Site>;
   public sites: Observable<DocumentChangeAction[]>;
 
-  public form: any = {
-    provider: 'youtube',
-    url: ''
-  };
+  public showForm: boolean = false;
+
+  public selectedUrl: any = '';
   public formSite: any = {
+    provider: '',
     label: '',
     url: ''
   };
@@ -87,12 +87,7 @@ export class AppComponent {
   }
 
   public onSubmitScrap() {
-    const body = {
-      url: this.form.url,
-      provider: this.form.provider,
-      userid: this.user.uid
-    };
-    this.http.post('http://127.0.0.1:8081/scrape', body, {
+    this.http.post('http://127.0.0.1:8081/scrape', this.selectedUrl, {
       headers: new HttpHeaders().set('Content-Type', 'application/json'),
       responseType: 'text'
      })
@@ -104,11 +99,13 @@ export class AppComponent {
   public onSubmitSite() {
     const body = {
       url: this.formSite.url,
+      provider: this.formSite.provider,
       label: this.formSite.label,
       userid: this.user.uid
     };
     this.sitesCollection.add(body);
     this.formSite.url = '';
+    this.formSite.provider = '';
     this.formSite.label = '';
   }
 
@@ -123,5 +120,13 @@ export class AppComponent {
   public filterByStatus(status) {
     this.currentStatus = status.value;
     this.initFetch();
+  }
+
+  public toggleForm() {
+    this.showForm = !this.showForm;
+  }
+
+  public compareSelectedUrl(itemA, itemB) {
+    return itemA && itemB && itemA.url == itemB.url;
   }
 }

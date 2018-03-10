@@ -10,23 +10,26 @@
       <h1>Hello {{ user.displayName }}!</h1>
       <button (click)="logout()" type="button" class="btn btn-primary">Logout</button>
 
-      <form (submit)="onSubmitScrap()">
-        <select [(ngModel)]="form.provider" name="provider">
+      <button type="button" class="btn btn-outline-primary" (click)="toggleForm()">{{ showForm ? 'Lancer un scrap' : 'Ajouter une url' }}</button>
+
+      <form (submit)="onSubmitScrap()" *ngIf="!showForm">
+        <select class="form-control" [(ngModel)]="selectedUrl" name="url" [compareWith]="compareSelectedUrl">
+          <option value="" disabled>Selectionnez une url</option>
+          <option *ngFor="let site of sites | async" [ngValue]="site.payload.doc.data()">{{ site.payload.doc.data().label }}</option>
+        </select>
+        <button type="submit" class="btn btn-primary" [disabled]="!selectedUrl?.url">SCRAPPER</button>
+      </form>
+      <br>
+
+      <form (submit)="onSubmitSite()" *ngIf="showForm">
+        <select class="form-control" [(ngModel)]="formSite.provider" name="provider">
+          <option value="">Sélectionnez un provider</option>
           <option value="youtube">Youtube</option>
           <option value="mamytwink">MamyTwink</option>
         </select>
-        <select [(ngModel)]="form.url" name="url">
-          <option value="" disabled>Selectionnez un site</option>
-          <option *ngFor="let site of sites | async" [value]="site.payload.doc.data().url">{{ site.payload.doc.data().label }}</option>
-        </select>
-        <button type="submit" class="btn btn-primary" [disabled]="!form.url">SCRAPPER</button>
-      </form>
-      <br>
-      <form (submit)="onSubmitSite()">
-        Ajouter un site :
-        <input [(ngModel)]="formSite.label" name="label" placeholder="label">
-        <input [(ngModel)]="formSite.url" name="url" placeholder="url">
-        <button type="submit" class="btn btn-primary">ENREGISTRER</button>
+        <input class="form-control" [(ngModel)]="formSite.label" name="label" placeholder="label">
+        <input class="form-control" [(ngModel)]="formSite.url" name="url" placeholder="url">
+        <button type="submit" class="btn btn-primary" [disabled]="!formSite.provider || !formSite.label || !formSite.url">ENREGISTRER</button>
       </form>
     </div>
   </div>
