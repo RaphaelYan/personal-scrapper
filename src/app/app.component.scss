@@ -15,3 +15,13 @@
   flex: initial;
   margin-bottom: 15px;
 }
+@media (max-width: 991px) {
+  .card-deck .card {
+    width: calc(50% - 30px);
+  }
+}
+@media (max-width: 575px) {
+  .card-deck .card {
+    width: 100%;
+  }
+}
