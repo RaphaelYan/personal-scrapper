@@ -4,6 +4,7 @@ import * as firebase from 'firebase/app';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../environments/environment';
 
 interface Item {
   userid: string;
@@ -104,7 +105,7 @@ export class AppComponent {
   }
 
   public onSubmitScrap() {
-    this.http.post('/scrape', this.selectedUrl, {
+    this.http.post(environment.url, this.selectedUrl, {
       headers: new HttpHeaders().set('Content-Type', 'application/json'),
       responseType: 'text'
      })
