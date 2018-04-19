@@ -20,9 +20,15 @@
       "prefix": "app",
       "styles": [
         "styles.scss",
-        "../node_modules/font-awesome/css/font-awesome.css"
+        "../node_modules/font-awesome/css/font-awesome.css",
+        "../node_modules/ngx-deck/assets/scss/stack.component.scss",
+        "../node_modules/ngx-deck/assets/scss/touch-animation.directive.scss"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/ngx-deck/assets/js/modernizr-custom.js",
+        "../node_modules/ngx-deck/assets/js/dynamics.min.js",
+        "../node_modules/ngx-deck/assets/js/main.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

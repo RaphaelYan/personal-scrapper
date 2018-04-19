@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
+import { Component, ViewChild } from '@angular/core';
+import { AppService } from './app.service';
 import { AngularFirestore, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -23,10 +22,18 @@ interface Site {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  @ViewChild('stack') stack;
+  // public display: string = 'items';
+  public isScrapping: boolean = false;
   private itemsCollection: AngularFirestoreCollection<Item>;
   public items: Observable<DocumentChangeAction[]>;
   private sitesCollection: AngularFirestoreCollection<Site>;
   public sites: Site[];
+  public hasItems: boolean = false;
+  public fetching: boolean = false;
+  public deckOptions: any = {
+    infinite: true
+  };
 
   public showForm: boolean = false;
 
@@ -66,8 +73,8 @@ export class AppComponent {
   public currentStatus: string = 'scrapped';
   public filterProvider: string = '';
 
-  constructor(public afAuth: AngularFireAuth, private afs: AngularFirestore, private http: HttpClient) {
-    this.afAuth.authState.subscribe((user) => {
+  constructor(private appService: AppService, private afs: AngularFirestore, private http: HttpClient) {
+    this.appService.authState.subscribe((user) => {
       this.user = user;
       if (!user) {
         return;
@@ -78,12 +85,25 @@ export class AppComponent {
   }
 
   public initFetch() {
+    this.hasItems = false;
+    this.fetching = true;
     this.itemsCollection = this.afs.collection<Item>('items', (ref) => {
       return ref.where('userid', '==', this.user.uid)
         .where('status', '==', this.currentStatus)
         .orderBy('timestamp', this.currentStatus === 'scrapped' ? 'desc' : 'asc');
     });
-    this.items = this.itemsCollection.snapshotChanges();
+    this.items = this.itemsCollection.snapshotChanges()
+    .map(actions => {
+      this.fetching = false;
+      this.hasItems = !!(actions && actions.length);
+      console.warn(this.hasItems)
+      console.warn('snapshotChanges')
+      setTimeout(() => {
+        console.log('init');
+        this.stack.init();
+      });
+      return actions;
+    });
   }
 
   public initSites() {
@@ -96,20 +116,14 @@ export class AppComponent {
     });
   }
 
-  public login() {
-    this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  }
-
-  public logout() {
-    this.afAuth.auth.signOut();
-  }
-
   public onSubmitScrap() {
+    this.isScrapping = true;
     this.http.post(environment.url, this.selectedUrl, {
       headers: new HttpHeaders().set('Content-Type', 'application/json'),
       responseType: 'text'
-     })
+    })
     .subscribe((data) => {
+      this.isScrapping = false;
       console.log('data', data);
     });
   }
@@ -146,5 +160,21 @@ export class AppComponent {
 
   public trackBySite(index, item) {
     return item.url;
+  }
+
+  public accept(event) {
+    this.stack.accept(() => {
+      console.warn('ACCEPT');
+    });
+  }
+
+  public reject(event) {
+    this.stack.reject(() => {
+      console.warn('REJECT');
+    });
+  }
+
+  public next() {
+    this.stack.reject();
   }
 }
